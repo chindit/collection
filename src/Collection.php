@@ -96,6 +96,28 @@ class Collection implements \Iterator
         return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
 
+    public function groupBy($key): self
+    {
+    	$result = new self();
+
+    	foreach ($this->data as $datum) {
+    		$value = $this->getValueByAccessor($datum, $key);
+
+    		if ($value === null) {
+    			$result->push($datum);
+		    } else {
+    			$keyData = $result->get($value, new Collection());
+    			if (!$keyData instanceof Collection) {
+    				$result->put($value, new Collection());
+    				$keyData = $result->get($value);
+			    }
+    			$result->put($value, $keyData->push($datum));
+		    }
+	    }
+
+    	return $result;
+    }
+
     public function has($key): bool
     {
         return array_key_exists($key, $this->data);
@@ -180,6 +202,13 @@ class Collection implements \Iterator
         $this->data[] = $item;
 
         return $this;
+    }
+
+    public function put($key, $value): self
+    {
+    	$this->data[$key] = $value;
+
+    	return $this;
     }
 
     public function rewind(): void

@@ -21,6 +21,23 @@ class CollectionTest extends TestCase
         $this->assertEquals($source, $collection->toArray());
     }
 
+    public function testGroupBy(): void
+    {
+    	$source = [['key' => 'me', 'some' => 'thing'],['key' => 'me', 'thing' => 'some'],'banana', ['key' => 'not-me', 'some' => 'else']];
+
+    	$collection = new Collection($source);
+    	$result = $collection->groupBy('key');
+
+    	$this->assertEquals(['me' => [
+		    ['key' => 'me', 'some' => 'thing'],
+		    ['key' => 'me', 'thing' => 'some']
+	    ],
+		    'not-me' => [
+			    ['key' => 'not-me', 'some' => 'else']
+		    ],
+		    'banana'], $result->toArray());
+    }
+
     public function testPluckWithEmptyData(): void
     {
         $this->assertEquals(new Collection(), (new Collection())->pluck('name'));
@@ -109,6 +126,15 @@ class CollectionTest extends TestCase
         $collection->push('orange');
 
         $this->assertEquals(['apple', 'pear', 'orange'], $collection->toArray());
+    }
+
+    public function testPut(): void
+    {
+	    $collection = new Collection(['apple', 'pear']);
+
+	    $collection->put('not-a-vegetable', 'tomato');
+
+	    $this->assertEquals(['apple', 'pear', 'not-a-vegetable' => 'tomato'], $collection->toArray());
     }
 
     public function testContainsWithNotFoundData(): void
