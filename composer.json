@@ -1,0 +1,30 @@
+{
+    "name": "chindit/collection",
+    "description": "Small array wrapper to ease array handling",
+    "type": "library",
+    "license": "GPL-3.0-or-later",
+    "minimum-stability": "stable",
+    "version": "1.0.0",
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chindit\\Collection\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chindit\\Collection\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "David Lumaye",
+            "email": "littletiger58@gmail.com"
+        }
+    ]
+}
