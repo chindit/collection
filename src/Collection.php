@@ -106,12 +106,12 @@ class Collection implements \Iterator
     		if ($value === null) {
     			$result->push($datum);
 		    } else {
-    			$keyData = $result->get($value, new Collection());
+    			$keyData = $result->get((string)$value, new Collection());
     			if (!$keyData instanceof Collection) {
-    				$result->put($value, new Collection());
-    				$keyData = $result->get($value);
+    				$result->put((string)$value, new Collection());
+    				$keyData = $result->get((string)$value);
 			    }
-    			$result->put($value, $keyData->push($datum));
+    			$result->put((string)$value, $keyData->push($datum));
 		    }
 	    }
 
