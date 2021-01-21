@@ -12,4 +12,4 @@ jobs:
             - name: Install dependencies
               run: composer install --prefer-dist --no-progress --no-suggest
             - name: PHPUnit
-              uses: tf-tech/actions-phpunit-symfony@master
+              uses: graychen/phpunit-action@v1.0.0
