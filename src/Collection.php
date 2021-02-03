@@ -30,6 +30,11 @@ class Collection implements \Iterator
         return false;
     }
 
+    public function count(): int
+    {
+        return count($this->data);
+    }
+
     public function current()
     {
         return $this->iterator->current();
