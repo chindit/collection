@@ -65,7 +65,7 @@ class Collection implements \Iterator
 
         foreach ($this->data as $key => $datum) {
             if ($callback($datum, $key) === true) {
-                $accepted->push($datum);
+                $accepted->put($key, $datum);
             }
         }
 
