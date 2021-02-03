@@ -21,6 +21,23 @@ class CollectionTest extends TestCase
         $this->assertEquals($source, $collection->toArray());
     }
 
+    public function testEachWithKey(): void
+    {
+        $source = [
+            'aa' => 1,
+            'ba' => [
+                'c' => 'd',
+            ],
+        ];
+
+        $collection = new Collection($source);
+
+        $collection->each(function($value, $key)
+        {
+            $this->assertStringEndsWith('a', $key);
+        });
+    }
+
     public function testGroupBy(): void
     {
     	$source = [['key' => 'me', 'some' => 'thing'],['key' => 'me', 'thing' => 'some'],'banana', ['key' => 'not-me', 'some' => 'else']];
