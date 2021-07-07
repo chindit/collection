@@ -30,6 +30,11 @@ class Collection implements \Iterator
         return false;
     }
 
+    public function count(): int
+    {
+        return count($this->data);
+    }
+
     public function current()
     {
         return $this->iterator->current();
@@ -41,8 +46,8 @@ class Collection implements \Iterator
             return $this;
         }
 
-        foreach ($this->data as $datum) {
-            if ($callback($datum) === false) {
+        foreach ($this->data as $key => $datum) {
+            if ($callback($datum, $key) === false) {
                 break;
             }
         }
@@ -58,9 +63,9 @@ class Collection implements \Iterator
 
         $accepted = new self();
 
-        foreach ($this->data as $datum) {
-            if ($callback($datum) === true) {
-                $accepted->push($datum);
+        foreach ($this->data as $key => $datum) {
+            if ($callback($datum, $key) === true) {
+                $accepted->put($key, $datum);
             }
         }
 
@@ -141,8 +146,8 @@ class Collection implements \Iterator
     public function keyBy($callback): self
     {
         $results = [];
-        foreach ($this->data as $item) {
-            $results[] = (is_callable($callback)) ? $callback($item) : $this->getValueByAccessor($item, $callback);
+        foreach ($this->data as $key => $item) {
+            $results[] = (is_callable($callback)) ? $callback($item, $key) : $this->getValueByAccessor($item, $callback);
         }
 
         return new self(array_combine($results, $this->data));
@@ -161,8 +166,8 @@ class Collection implements \Iterator
 
         $result = [];
 
-        foreach ($this->data as $item) {
-            $result[] = $callback($item);
+        foreach ($this->data as $key => $item) {
+            $result[] = $callback($item, $key);
         }
 
         return new self($result);
