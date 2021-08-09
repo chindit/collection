@@ -241,6 +241,20 @@ class CollectionTest extends TestCase
         );
     }
 
+    public function testSort(): void
+    {
+    	$collection = new Collection(['pear', 3, 'banana']);
+
+    	$this->assertEquals([3, 'banana', 'pear'], $collection->sort()->toArray());
+    }
+
+    public function testRsort(): void
+    {
+	    $collection = new Collection(['pear', 3, 'banana']);
+
+	    $this->assertEquals(['pear', 'banana', 3], $collection->rsort()->toArray());
+    }
+
     public function testHas(): void
     {
         $collection = new Collection(['a' => 'apple', 'p' => 'pear', 'o' => 'orange']);
