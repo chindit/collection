@@ -74,7 +74,7 @@ class Collection implements \Iterator
 
     public function first()
     {
-        return count($this->data) > 0 ? $this->data[0] : null;
+        return count($this->data) > 0 ? reset($this->data) : null;
     }
 
     public function flatten(int $depth = 500): self
