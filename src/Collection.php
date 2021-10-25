@@ -199,7 +199,7 @@ class Collection implements \Iterator
             $results->push($this->getValueByAccessor($item, $name));
         }
 
-        return $results->filter(fn($item) => $item !== null);
+        return new self(array_values($results->filter(fn($item) => $item !== null)->toArray()));
     }
 
     public function push($item): self
@@ -212,6 +212,20 @@ class Collection implements \Iterator
     public function put($key, $value): self
     {
     	$this->data[$key] = $value;
+
+    	return $this;
+    }
+
+    public function sort(): self
+    {
+    	sort($this->data);
+
+    	return $this;
+    }
+
+    public function rsort(): self
+    {
+    	rsort($this->data);
 
     	return $this;
     }
