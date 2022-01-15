@@ -35,7 +35,7 @@ class Collection implements \Iterator
         return count($this->data);
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->iterator->current();
     }
@@ -72,7 +72,7 @@ class Collection implements \Iterator
         return $accepted;
     }
 
-    public function first()
+    public function first(): mixed
     {
         return count($this->data) > 0 ? reset($this->data) : null;
     }
@@ -96,7 +96,7 @@ class Collection implements \Iterator
         return new self($result);
     }
 
-    public function get($key, $defaultValue = null)
+    public function get($key, $defaultValue = null): mixed
     {
         return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
@@ -138,7 +138,7 @@ class Collection implements \Iterator
         return !$this->isEmpty();
     }
 
-    public function key()
+    public function key(): int|string
     {
         return $this->iterator->key();
     }
@@ -252,7 +252,7 @@ class Collection implements \Iterator
         return $this->iterator->valid();
     }
 
-    private function getValueByAccessor($item, $name)
+    private function getValueByAccessor($item, $name): mixed
     {
         if (is_array($item)) {
             if (isset($item[$name])) {
