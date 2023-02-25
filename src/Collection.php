@@ -21,13 +21,7 @@ class Collection implements \Iterator
 
     public function contains($search): bool
     {
-        foreach ($this->data as $item) {
-            if ($item === $search) {
-                return true;
-            }
-        }
-
-        return false;
+        return in_array($search, $this->data, true);
     }
 
     public function count(): int
@@ -188,7 +182,7 @@ class Collection implements \Iterator
         $this->iterator->next();
     }
 
-    public function pluck(string $name): self
+    public function pluck(string $name, string|int|null $key = null): self
     {
         if (empty($this->data)) {
             return new self();
@@ -196,10 +190,19 @@ class Collection implements \Iterator
 
         $results = new self();
         foreach ($this->data as $item) {
-            $results->push($this->getValueByAccessor($item, $name));
+            if (!$key) {
+                $results->push($this->getValueByAccessor($item, $name));
+            } elseif ($this->isBasicType($item, $key)) {
+                $results->put($this->getValueByAccessor($item, $key), $this->getValueByAccessor($item, $name));
+            }
         }
 
-        return new self(array_values($results->filter(fn($item) => $item !== null)->toArray()));
+        $results = $results->filter(fn($item) => $item !== null);
+        if (!$key) {
+            return new self(array_values($results->toArray()));
+        } else {
+            return $results;
+        }
     }
 
     public function push($item): self
@@ -270,5 +273,12 @@ class Collection implements \Iterator
         }
 
         return null;
+    }
+
+    private function isBasicType(mixed $item, int|string $key): bool
+    {
+        $value = $this->getValueByAccessor($item, $key);
+
+        return is_string($value) || is_numeric($value);
     }
 }

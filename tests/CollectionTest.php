@@ -137,6 +137,30 @@ class CollectionTest extends TestCase
         $this->assertEquals(['d', 'chindit'], $collection->pluck('name')->toArray());
     }
 
+    public function testPluckWithKey(): void
+    {
+        $testObjectClass = new class {
+            private $name = 'chindit';
+            public $firstname = 'Pico';
+            public function getName(): string
+            {
+                return $this->name;
+            }
+        };
+        $testObject = new $testObjectClass();
+
+        $collection = new Collection([
+            'a',
+            'b' => [
+                'name' => 'd',
+                'firstname' => 'k'
+            ],
+            'd' => $testObject
+        ]);
+
+        $this->assertEquals(['k' => 'd', 'Pico' => 'chindit'], $collection->pluck('name', 'firstname')->toArray());
+    }
+
     public function testPluckWithPublicAttribute(): void
     {
         $testObjectClass = new class {
