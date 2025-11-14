@@ -245,7 +245,7 @@ class CollectionTest extends TestCase
     {
         $collection = new Collection(['apple', 'pear', 'orange']);
 
-        $this->assertEquals($collection, $collection->filter(null));
+        $this->assertEquals($collection->toArray(), $collection->filter()->toArray());
     }
 
     public function testFilterWithNonTrueMethod(): void
