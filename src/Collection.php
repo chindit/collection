@@ -49,22 +49,21 @@ class Collection implements \Iterator
         return $this;
     }
 
-    public function filter($callback): self
-    {
-        if (!is_callable($callback)) {
-            return $this;
-        }
+	public function filter(?callable $callback = null): self
+	{
+		$accepted = new self();
+		foreach ($this->data as $key => $datum) {
+			if ($callback === null) {
+				if (!empty($datum)) {
+					$accepted->put($key, $datum);
+				}
+			} elseif ($callback($datum, $key) === true) {
+				$accepted->put($key, $datum);
+			}
+		}
 
-        $accepted = new self();
-
-        foreach ($this->data as $key => $datum) {
-            if ($callback($datum, $key) === true) {
-                $accepted->put($key, $datum);
-            }
-        }
-
-        return $accepted;
-    }
+		return $accepted;
+	}
 
     public function first(): mixed
     {
