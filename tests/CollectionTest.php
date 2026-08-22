@@ -441,12 +441,30 @@ class CollectionTest extends TestCase
             ]
         );
 
-        $this->assertEquals(1, $collection->current());
-        $collection->next();
-        $this->assertEquals(2, $collection->current());
-        $this->assertEquals('b', $collection->key());
-        $collection->rewind();
-        $this->assertEquals('a', $collection->key());
-        $this->assertTrue($collection->valid());
+        $iterator = $collection->getIterator();
+        $this->assertEquals(1, $iterator->current());
+        $iterator->next();
+        $this->assertEquals(2, $iterator->current());
+        $this->assertEquals('b', $iterator->key());
+        $iterator->rewind();
+        $this->assertEquals('a', $iterator->key());
+        $this->assertTrue($iterator->valid());
+    }
+
+    public function testIteratorResetWhenCreatingNewCollections()
+    {
+        $collection = (new Collection(['apple', 'banana', 'pear']))->groupBy(fn(string $word) => $word[0])->keyBy(fn(Collection $elements) => $elements->first()[0]);
+        $this->assertEquals(3, $collection->count());
+        $this->assertSame(['a' => ['apple'], 'b' => ['banana'], 'p' => ['pear']], $collection->toArray());
+
+        $group = $collection->get('a');
+        $result = [];
+
+
+        foreach ($group as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        $this->assertSame(['apple'], $result);
     }
 }

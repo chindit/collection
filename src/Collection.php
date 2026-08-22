@@ -2,16 +2,16 @@
 
 namespace Chindit\Collection;
 
-class Collection implements \Iterator
+use ArrayIterator;
+use Traversable;
+
+class Collection implements \IteratorAggregate
 {
     private array $data;
-    private \ArrayIterator $iterator;
 
     public function __construct(array $data = [])
     {
         $this->data = $data;
-        // Prepare iterator
-        $this->iterator = new \ArrayIterator($this->data);
     }
 
     public function all(): array
@@ -27,11 +27,6 @@ class Collection implements \Iterator
     public function count(): int
     {
         return count($this->data);
-    }
-
-    public function current(): mixed
-    {
-        return $this->iterator->current();
     }
 
     public function each($callback): self
@@ -94,12 +89,23 @@ class Collection implements \Iterator
         return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
 
-    public function groupBy($key): self
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->data);
+    }
+
+    public function groupBy($groupKey): self
     {
     	$result = new self();
 
     	foreach ($this->data as $datum) {
-    		$value = $this->getValueByAccessor($datum, $key);
+            if (is_string($groupKey)) {
+                $value = $this->getValueByAccessor($datum, $groupKey);
+            } elseif (is_callable($groupKey)) {
+                $value = $groupKey($datum);
+            } else {
+                $value = null;
+            }
 
     		if ($value === null) {
     			$result->push($datum);
@@ -129,11 +135,6 @@ class Collection implements \Iterator
     public function isNotEmpty(): bool
     {
         return !$this->isEmpty();
-    }
-
-    public function key(): int|string
-    {
-        return $this->iterator->key();
     }
 
     public function keyBy($callback): self
@@ -174,11 +175,6 @@ class Collection implements \Iterator
     public function mergeRecursive(self $collection): self
     {
         return new self(array_merge_recursive($this->data, $collection->toArray()));
-    }
-
-    public function next(): void
-    {
-        $this->iterator->next();
     }
 
     public function pluck(string $name, string|int|null $key = null): self
@@ -232,11 +228,6 @@ class Collection implements \Iterator
     	return $this;
     }
 
-    public function rewind(): void
-    {
-        $this->iterator->rewind();
-    }
-
     public function toArray(): array
     {
         return array_map(function ($value) {
@@ -247,11 +238,6 @@ class Collection implements \Iterator
     public function unique(): self
     {
         return new self(array_unique($this->data));
-    }
-
-    public function valid(): bool
-    {
-        return $this->iterator->valid();
     }
 
     private function getValueByAccessor($item, $name): mixed
