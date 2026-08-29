@@ -5,21 +5,37 @@ namespace Chindit\Collection;
 use ArrayIterator;
 use Traversable;
 
+/**
+ * @template T
+ * @implements \IteratorAggregate<array-key, T>
+ */
 class Collection implements \IteratorAggregate
 {
+    /**
+     * @var array<array-key, T>
+     */
     private array $data;
 
+    /**
+     * @param array<array-key, T> $data
+     */
     public function __construct(array $data = [])
     {
         $this->data = $data;
     }
 
+    /**
+     * @return list<T>
+     */
     public function all(): array
     {
         return array_values($this->data);
     }
 
-    public function contains($search): bool
+    /**
+     * @param T $search
+     */
+    public function contains(mixed $search): bool
     {
         return in_array($search, $this->data, true);
     }
@@ -29,7 +45,10 @@ class Collection implements \IteratorAggregate
         return count($this->data);
     }
 
-    public function each($callback): self
+    /**
+     * @param callable(T, array-key): mixed $callback
+     */
+    public function each(mixed $callback): self
     {
         if (!is_callable($callback)) {
             return $this;
@@ -44,6 +63,9 @@ class Collection implements \IteratorAggregate
         return $this;
     }
 
+	/**
+	 * @param callable(T, array-key): bool|null $callback
+	 */
 	public function filter(?callable $callback = null): self
 	{
 		$accepted = new self();
@@ -60,11 +82,17 @@ class Collection implements \IteratorAggregate
 		return $accepted;
 	}
 
+    /**
+     * @return T|null
+     */
     public function first(): mixed
     {
         return count($this->data) > 0 ? reset($this->data) : null;
     }
 
+    /**
+     * @return Collection<mixed>
+     */
     public function flatten(int $depth = 500): self
     {
         $result = [];
@@ -84,17 +112,30 @@ class Collection implements \IteratorAggregate
         return new self($result);
     }
 
-    public function get($key, $defaultValue = null): mixed
+    /**
+     * @template TDefault
+     * @param array-key $key
+     * @param TDefault $defaultValue
+     * @return T|TDefault
+     */
+    public function get(mixed $key, mixed $defaultValue = null): mixed
     {
         return $this->has($key) ? $this->data[$key] : $defaultValue;
     }
 
+    /**
+     * @return Traversable<array-key, T>
+     */
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->data);
     }
 
-    public function groupBy($groupKey): self
+    /**
+     * @param string|callable(T): (array-key|null) $groupKey
+     * @return Collection<T|Collection<T>>
+     */
+    public function groupBy(mixed $groupKey): self
     {
     	$result = new self();
 
@@ -122,7 +163,10 @@ class Collection implements \IteratorAggregate
     	return $result;
     }
 
-    public function has($key): bool
+    /**
+     * @param array-key $key
+     */
+    public function has(mixed $key): bool
     {
         return array_key_exists($key, $this->data);
     }
@@ -137,7 +181,11 @@ class Collection implements \IteratorAggregate
         return !$this->isEmpty();
     }
 
-    public function keyBy($callback): self
+    /**
+     * @param array-key|callable(T, array-key): array-key $callback
+     * @return Collection<T>
+     */
+    public function keyBy(mixed $callback): self
     {
         $results = [];
         foreach ($this->data as $key => $item) {
@@ -147,12 +195,20 @@ class Collection implements \IteratorAggregate
         return new self(array_combine($results, $this->data));
     }
 
+    /**
+     * @return Collection<array-key>
+     */
     public function keys(): self
     {
         return new self(array_keys($this->data));
     }
 
-    public function map($callback): self
+    /**
+     * @template U
+     * @param callable(T, array-key): U $callback
+     * @return Collection<U>
+     */
+    public function map(mixed $callback): self
     {
         if (!is_callable($callback)) {
             return $this;
@@ -167,16 +223,29 @@ class Collection implements \IteratorAggregate
         return new self($result);
     }
 
+    /**
+     * @template U
+     * @param Collection<U> $collection
+     * @return Collection<T|U>
+     */
     public function merge(self $collection): self
     {
         return new self(array_merge($this->data, $collection->toArray()));
     }
 
+    /**
+     * @template U
+     * @param Collection<U> $collection
+     * @return Collection<mixed>
+     */
     public function mergeRecursive(self $collection): self
     {
         return new self(array_merge_recursive($this->data, $collection->toArray()));
     }
 
+    /**
+     * @return Collection<mixed>
+     */
     public function pluck(string $name, string|int|null $key = null): self
     {
         if (empty($this->data)) {
@@ -200,20 +269,30 @@ class Collection implements \IteratorAggregate
         }
     }
 
-    public function push($item): self
+    /**
+     * @param T $item
+     */
+    public function push(mixed $item): self
     {
         $this->data[] = $item;
 
         return $this;
     }
 
-    public function put($key, $value): self
+    /**
+     * @param array-key $key
+     * @param T $value
+     */
+    public function put(mixed $key, mixed $value): self
     {
     	$this->data[$key] = $value;
 
     	return $this;
     }
 
+    /**
+     * @return self
+     */
     public function sort(): self
     {
     	sort($this->data);
@@ -221,6 +300,9 @@ class Collection implements \IteratorAggregate
     	return $this;
     }
 
+    /**
+     * @return self
+     */
     public function rsort(): self
     {
     	rsort($this->data);
@@ -228,6 +310,9 @@ class Collection implements \IteratorAggregate
     	return $this;
     }
 
+    /**
+     * @return array<array-key, mixed>
+     */
     public function toArray(): array
     {
         return array_map(function ($value) {
@@ -235,12 +320,19 @@ class Collection implements \IteratorAggregate
         }, $this->data);
     }
 
+    /**
+     * @return self
+     */
     public function unique(): self
     {
         return new self(array_unique($this->data));
     }
 
-    private function getValueByAccessor($item, $name): mixed
+    /**
+     * @param mixed $item
+     * @param string|int $name
+     */
+    private function getValueByAccessor(mixed $item, string|int $name): mixed
     {
         if (is_array($item)) {
             if (isset($item[$name])) {
